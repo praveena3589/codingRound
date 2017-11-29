@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.openqa.selenium.Keys;
 
 import java.util.List;
 
@@ -20,28 +21,34 @@ public class FlightBookingTest {
 
         setDriverPath();
         driver.get("https://www.cleartrip.com/");
-        waitFor(2000);
+        //It is not recommended to hardcode the wait.so i m using explicit Wait to wait for the element to load.
+        //Using Expilcit wait will solve the synchronization issues.This also improves the improve the performance.
+       // waitFor(2000);
+        waitFor(By.id("OneWay"));
         driver.findElement(By.id("OneWay")).click();
 
         driver.findElement(By.id("FromTag")).clear();
-        driver.findElement(By.id("FromTag")).sendKeys("Bangalore");
+      //here we can directly send Enter key so that the first value is populated
+        driver.findElement(By.id("FromTag")).sendKeys("Bangalore",Keys.ENTER);
 
         //wait for the auto complete options to appear for the origin
 
-        waitFor(2000);
-        List<WebElement> originOptions = driver.findElement(By.id("ui-id-1")).findElements(By.tagName("li"));
-        originOptions.get(0).click();
+      //  waitFor(2000);
+        //List<WebElement> originOptions = driver.findElement(By.id("ui-id-1")).findElements(By.tagName("li"));
+       // originOptions.get(0).click();
 
         driver.findElement(By.id("toTag")).clear();
-        driver.findElement(By.id("toTag")).sendKeys("Delhi");
+        driver.findElement(By.id("toTag")).sendKeys("Delhi",Keys.ENTER);  
 
         //wait for the auto complete options to appear for the destination
 
-        waitFor(2000);
+        //waitFor(2000);
         //select the first item from the destination auto complete list
-        List<WebElement> destinationOptions = driver.findElement(By.id("ui-id-2")).findElements(By.tagName("li"));
-        destinationOptions.get(0).click();
-
+       // List<WebElement> destinationOptions = driver.findElement(By.id("ui-id-2")).findElements(By.tagName("li"));
+        //destinationOptions.get(0).click();
+        //click on the calender icon-So that we can select the date.
+        
+        driver.findElement(By.xpath("//*[@class='icon ir datePicker']")).click();
         driver.findElement(By.xpath("//*[@id='ui-datepicker-div']/div[1]/table/tbody/tr[3]/td[7]/a")).click();
 
         //all fields filled in. Now click on search
@@ -57,18 +64,23 @@ public class FlightBookingTest {
     }
 
 
-    private void waitFor(int durationInMilliSeconds) {
+   /* private void waitFor(int durationInMilliSeconds) {
+        //it is not recommended to hardcode wait hence removing this method.
         try {
             Thread.sleep(durationInMilliSeconds);
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    } */
+        private void waitFor(By by) {
+       WebDriverWait wait=new WebDriverWait(driver,10);
+            wait.until(ExpectedConditions.visiblityOfLocatedBy(by));
     }
 
 
     private boolean isElementPresent(By by) {
         try {
-            driver.findElement(by);
+            driver.findElement(by); 
             return true;
         } catch (NoSuchElementException e) {
             return false;
